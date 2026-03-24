@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              String       @id @default(cuid())
+  username        String       @unique
+  password        String
+  role            String       @default("USER")
+  credits         Int          @default(200)
+  lastCreditReset DateTime     @default(now())
+  createdAt       DateTime     @default(now())
+  submissions     Submission[]
+}
+
+model AIConfig {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String   @default("")
+  apiKey      String
+  endpoint    String
+  model       String
+  creditCost  Int      @default(0)
+  sortOrder   Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
+
+model CategoryConfig {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String   @default("")
+  defaultFull Int      @default(100)
+  extraPrompt String   @default("")
+  updatedAt   DateTime @updatedAt
+}
+
+model Submission {
+  id             String   @id @default(cuid())
+  userId         String
+  title          String?
+  summary        String?
+  content        String?
+  topicImageUrls String   @default("[]")
+  imageUrls      String   @default("[]")
+  standard       String
+  level          String
+  language       String   @default("中文")
+  fullScore      Int      @default(100)
+  creditCost     Int      @default(0)
+  responseTime   Int?
+  score          Float?
+  feedback       String?
+  status         String   @default("PENDING")
+  error          String?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id])
+}
